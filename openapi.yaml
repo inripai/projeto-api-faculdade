@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: API de Biblioteca de Jogos
+  version: 1.0.0
+  description: API simples para gerenciar a minha biblioteca pessoal de jogos.
+paths:
+  /jogos:
+    get:
+      summary: Lista todos os jogos cadastrados
+      operationId: listarJogos
+      responses:
+        "200":
+          description: Lista de jogos retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Jogo"
+    post:
+      summary: Adiciona um novo jogo na biblioteca
+      operationId: adicionarJogo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NovoJogo"
+      responses:
+        "201":
+          description: Jogo adicionado com sucesso
+        "400":
+          description: Erro de validação nos dados enviados
+  /jogos/{id}:
+    get:
+      summary: Busca as informações de um jogo específico pelo ID
+      operationId: buscarJogoPorId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID numérico do jogo
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Dados do jogo encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Jogo"
+        "404":
+          description: Jogo não encontrado na base
+components:
+  schemas:
+    Jogo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nome:
+          type: string
+          example: "Counter-Strike 1.6"
+        genero:
+          type: string
+          example: "FPS"
+    NovoJogo:
+      type: object
+      required:
+        - nome
+        - genero
+      properties:
+        nome:
+          type: string
+          example: "Valorant"
+        genero:
+          type: string
+          example: "FPS tático"

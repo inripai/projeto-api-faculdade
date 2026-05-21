@@ -1,0 +1,50 @@
+name: CI/CD da API de Jogos
+
+on:
+  push:
+    branches:
+      - main
+
+# Permissões necessárias para o deploy no GitHub Pages funcionar
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar o validador Spectral
+        run: npm install -g @stoplight/spectral-cli
+
+      - name: Rodar Spectral no openapi.yaml
+        run: spectral lint openapi.yaml --ruleset spectral:oas
+
+  publicar-docs:
+    needs: validar # Garante que só publica se a validação passar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Baixar o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Gerar o HTML da documentação usando Redoc
+        run: npx @redocly/cli build-docs openapi.yaml -o index.html
+
+      - name: Configurar o GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Fazer upload do arquivo HTML gerado
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Publicar no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
