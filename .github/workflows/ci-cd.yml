@@ -22,7 +22,7 @@ jobs:
         run: npm install -g @stoplight/spectral-cli
 
       - name: Rodar Spectral no openapi.yaml
-        run: spectral lint openapi.yaml --ruleset spectral:oas
+        run: spectral lint openapi.yaml
 
   publicar-docs:
     needs: validar # Garante que só publica se a validação passar
